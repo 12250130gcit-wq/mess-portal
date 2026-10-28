@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Mess · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><h2 class="reveal">My Mess</h2><div class="card reveal"><h3>Today&#39;s meals — tap to mark you are eating</h3><div id="m" class="row"></div></div><div class="card reveal"><h3 id="bt"></h3><p id="b"></p></div><div class="card reveal"><h3>Rate today&#39;s meals</h3><div id="rt" class="row"></div></div><div class="card reveal"><h3>Guest meal booking</h3><div class="row"><input id="gn" type="number" min="1" max="20" placeholder="Number of guest meals"><button id="gb">Book (added to bill)</button></div></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+need();async function load(){const [mine,mn,bl]=await Promise.all([api('attend/mine'),api('menu'),api('bill')]),d=mn.menu[mn.today],b=bl.students[0]||{days:0,amount:0};
+$('#m').innerHTML=MEALS.map(k=>'<button '+(mine.includes(k)?'class="ghost" disabled':'data-m="'+k+'"')+'>'+(mine.includes(k)?'✔ ':'')+k+'<br><small>'+esc(d[k])+'</small></button>').join('');
+$('#bt').textContent='Bill for '+bl.month;$('#b').innerHTML='Days eaten: <b>'+b.days+'</b> × Rs '+bl.rate+'/day'+(b.guest?' + '+b.guest+' guest meals × Rs '+bl.guestRate:'')+' = <b>Rs '+b.amount+'</b>';}
+$('#m').onclick=async e=>{const k=e.target.closest('[data-m]')?.dataset.m;if(!k)return;try{await api('attend','POST',{meal:k});toast(k+' marked ✔');load()}catch{}};load();
+reveal();</script>
+<script type="module">import {$,api,toast,val,MEALS} from './common.js';
+$('#rt').innerHTML=MEALS.map(m=>'<div><small>'+m+'</small><select data-r="'+m+'"><option value="">Rate…</option>'+[5,4,3,2,1].map(n=>'<option>'+n+'</option>').join('')+'</select></div>').join('');
+$('#rt').onchange=async e=>{const m=e.target.dataset.r;if(!m||!e.target.value)return;try{await api('rate','POST',{meal:m,stars:e.target.value});toast('Thanks for rating '+m+' ★')}catch{}};
+$('#gb').onclick=async()=>{try{await api('guest','POST',{n:val('gn')});toast('Guest meals booked');location.reload()}catch{}};</script></body></html>

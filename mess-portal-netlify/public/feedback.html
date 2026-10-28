@@ -1,0 +1,5 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Feedback · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><h2 class="reveal">Feedback / Complaint Box</h2><div class="card reveal"><textarea id="fb" rows="4" placeholder="Tell the mess committee..."></textarea><button id="b">Send</button></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+need();$('#b').onclick=async()=>{try{await api('feedback','POST',{text:val('fb')});toast('Thank you!');$('#fb').value=''}catch{}};
+reveal();</script></body></html>

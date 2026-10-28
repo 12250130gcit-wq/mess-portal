@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manager · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><h2 class="reveal">Manager Dashboard</h2><div class="card reveal"><h3 id="ht"></h3><div id="h" class="row"></div></div><div class="card reveal"><h3>Leave requests</h3><table id="l"></table></div><div class="card reveal"><h3>Edit menu</h3><select id="md"></select><div id="mi" class="row"></div><button id="sm">Save menu</button></div><div class="card reveal"><h3>Post notice</h3><input id="nt"><button id="pn">Post</button></div><div class="card reveal"><h3>Feedback</h3><div id="f"></div></div><div class="card reveal"><h3>Meal ratings today</h3><div id="rr" class="row"></div></div><div class="card reveal"><h3>Backup</h3><button id="bk">Download full data backup (JSON)</button></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+need('manager');let menu;
+async function load(){const [h,ls,fb]=await Promise.all([api('headcount'),api('leaves'),api('feedback')]);$('#ht').textContent='Head count today ('+h.students+' students, '+h.onLeave+' on leave)';
+$('#h').innerHTML=MEALS.map(m=>'<div class="day"><small>'+m+'</small><b style="font-size:2rem">'+h.counts[m]+'</b></div>').join('');
+$('#l').innerHTML=ls.map(l=>'<tr><td>'+esc(l.name)+'</td><td>'+l.from+' → '+l.to+'</td><td>'+(l.status==='pending'?'<button data-i="'+l.id+'" data-s="approved">Approve</button> <button class="ghost" data-i="'+l.id+'" data-s="rejected">Reject</button>':l.status)+'</td></tr>').join('');
+$('#f').innerHTML=fb.map(f=>'<div class="note"><b>'+esc(f.name)+'</b>: '+esc(f.text)+' <small>'+f.date+'</small></div>').join('')||'None'}
+async function lm(){menu=(await api('menu')).menu;$('#md').innerHTML=Object.keys(menu).map(d=>'<option>'+d+'</option>').join('');fill()}
+const fill=()=>{$('#mi').innerHTML=MEALS.map(m=>'<input id="m_'+m+'" placeholder="'+m+'" value="'+esc(menu[$('#md').value][m])+'">').join('')};$('#md').onchange=fill;
+$('#sm').onclick=async()=>{const b={day:val('md')};MEALS.forEach(m=>b[m]=val('m_'+m));try{await api('menu','PUT',b);toast('Menu saved');lm()}catch{}};
+$('#pn').onclick=async()=>{try{await api('notices','POST',{text:val('nt')});toast('Posted');$('#nt').value=''}catch{}};
+$('#l').onclick=async e=>{const i=e.target.dataset.i;if(!i)return;try{await api('leave/decide','POST',{id:i,status:e.target.dataset.s});load()}catch{}};load();lm();
+reveal();</script>
+<script type="module">import {$,api,toast,MEALS} from './common.js';
+api('ratings').then(r=>$('#rr').innerHTML=MEALS.map(m=>'<div class="day"><small>'+m+'</small><b style="font-size:1.6rem">'+(r[m].avg??'–')+' ★</b><small>'+r[m].count+' votes</small></div>').join(''));
+$('#bk').onclick=async()=>{const d=await api('backup'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:'application/json'}));a.download='mess-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Backup downloaded')};</script></body></html>

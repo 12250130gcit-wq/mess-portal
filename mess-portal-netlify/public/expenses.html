@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Expenses & Bills · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><h2 class="reveal">Expenses &amp; Monthly Bill</h2><div class="card reveal"><h3>Add expense</h3><div class="row"><input id="ei" placeholder="Item (rice, oil...)"><input id="ea" type="number" placeholder="Amount"><button id="ab">Add</button></div><table id="e"></table></div><div class="card reveal"><h3 id="bt"></h3><table id="b"></table></div><div class="card reveal"><h3>Guest meal charge (Rs per meal)</h3><div class="row"><input id="gr" type="number" placeholder="60"><button id="gs">Set</button></div></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+need('manager');async function load(){const [e,b]=await Promise.all([api('expenses'),api('bill')]);
+$('#e').innerHTML=e.map(x=>'<tr><td>'+x.date+'</td><td>'+esc(x.item)+'</td><td>Rs '+x.amount+'</td></tr>').join('');$('#bt').textContent='Bill '+b.month+' — total Rs '+b.total+', '+b.totalDays+' meal-days, Rs '+b.rate+'/day';
+$('#b').innerHTML=b.students.map(s=>'<tr><td>'+esc(s.name)+' ('+esc(s.roll)+')</td><td>'+s.days+' days'+(s.guest?' + '+s.guest+' guest':'')+'</td><td>Rs '+s.amount+'</td></tr>').join('')}
+$('#ab').onclick=async()=>{try{await api('expense','POST',{item:val('ei'),amount:val('ea')});toast('Added');load()}catch{}};load();
+reveal();</script>
+<script type="module">import {$,api,toast,val} from './common.js';
+$('#gs').onclick=async()=>{try{await api('settings','POST',{guestRate:val('gr')});toast('Guest rate set')}catch{}};</script></body></html>

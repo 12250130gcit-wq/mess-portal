@@ -1,0 +1,6 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mess Off · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><h2 class="reveal">Apply Mess Off</h2><div class="card reveal"><div class="row"><input id="lf" type="date"><input id="lt" type="date"><input id="lrs" placeholder="Reason"><button id="lb">Apply</button></div><table id="t"></table></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+need();async function load(){$('#t').innerHTML=(await api('leaves')).map(l=>'<tr><td>'+l.from+' → '+l.to+'</td><td>'+esc(l.reason)+'</td><td><span class="tag">'+l.status+'</span></td></tr>').join('')}
+$('#lb').onclick=async()=>{try{await api('leave','POST',{from:val('lf'),to:val('lt'),reason:val('lrs')});toast('Request sent');load()}catch{}};load();
+reveal();</script></body></html>

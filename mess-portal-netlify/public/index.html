@@ -1,0 +1,5 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><header class="hero reveal"><div><h1>One place for<br><em>menu, attendance &amp; bill</em></h1><p>No more register. No more notice board. Less food waste.</p><a class="btn" href="login.html">Get started</a> <a class="btn ghost" href="menu.html">Weekly menu</a></div></header><h2 class="reveal">Today&#39;s Menu</h2><div id="t" class="card reveal"></div><h2 class="reveal">Notice Board</h2><div id="n" class="card reveal"></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+const [m,n]=await Promise.all([api('menu'),api('notices')]),d=m.menu[m.today];$('#t').innerHTML='<h3>'+m.today+'</h3>'+MEALS.map(k=>'<small>'+k+'</small><b>'+esc(d[k])+'</b>').join('');$('#n').innerHTML=noticesHTML(n);
+reveal();</script></body></html>

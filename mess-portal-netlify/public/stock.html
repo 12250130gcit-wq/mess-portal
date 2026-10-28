@@ -1,0 +1,6 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stock · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><h2 class="reveal">Stock List</h2><div class="card reveal"><div class="row"><input id="si" placeholder="Item (rice, oil, gas...)"><input id="sq" type="number" placeholder="Quantity"><input id="su" placeholder="Unit (kg, L)"><button id="sb">Save / update</button></div><table id="t"></table></div></main>
+<script type="module">import {$,api,esc,toast,val,need,shell} from './common.js';shell();need('manager');
+async function load(){$('#t').innerHTML=(await api('stock')).map(i=>'<tr><td>'+esc(i.item)+'</td><td>'+i.qty+' '+esc(i.unit)+'</td><td><button class="ghost" data-d="'+esc(i.item)+'">Remove</button></td></tr>').join('')||'<tr><td>No items yet</td></tr>'}
+$('#sb').onclick=async()=>{try{await api('stock','POST',{item:val('si'),qty:val('sq'),unit:val('su')});toast('Saved');load()}catch{}};
+$('#t').onclick=async e=>{const d=e.target.dataset.d;if(!d)return;try{await api('stock/delete','POST',{item:d});load()}catch{}};load();reveal();</script></body></html>

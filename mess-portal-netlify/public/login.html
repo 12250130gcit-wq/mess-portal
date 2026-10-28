@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login · Mess Portal</title><link rel="stylesheet" href="style.css"></head><body>
+<main class="wrap"><div class="row"><div class="card reveal"><h3>Login</h3><input id="lr" placeholder="Roll no"><input id="lp" type="password" placeholder="Password"><button id="lb">Login</button></div><div class="card reveal"><h3>New student? Register</h3><input id="rn" placeholder="Name"><div class="row"><input id="rr" placeholder="Roll no"><input id="rm" placeholder="Room"></div><input id="rph" placeholder="Phone"><input id="rp" type="password" placeholder="Password (6+)"><button id="rb">Register</button></div></div></main>
+<script type="module">import {$,api,esc,toast,val,user,need,shell,setAuth,menuHTML,noticesHTML,MEALS} from './common.js';shell();
+if(user)location.href=user.role==='manager'?'manager.html':'me.html';
+$('#lb').onclick=async()=>{try{const r=await api('login','POST',{roll:val('lr'),password:val('lp')});setAuth(r);location.href=r.user.role==='manager'?'manager.html':'me.html'}catch{}};
+$('#rb').onclick=async()=>{try{await api('register','POST',{name:val('rn'),roll:val('rr'),room:val('rm'),phone:val('rph'),password:val('rp')});toast('Registered! Now login on the left')}catch{}};
+reveal();</script></body></html>
